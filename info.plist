@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>bundleid</key>
+	<string>com.monkeycz.alfred.path</string>
+	<key>connections</key>
+	<dict>
+		<key>A21D8D0E-7EE4-4A57-A909-57EAEEF2D83C</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>1A9BA30F-B317-46AE-BBEF-3A7F1E11D587</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+			</dict>
+		</array>
+	</dict>
+	<key>createdby</key>
+	<string>monkeycz</string>
+	<key>description</key>
+	<string>Open a path</string>
+	<key>disabled</key>
+	<false/>
+	<key>name</key>
+	<string>Path</string>
+	<key>objects</key>
+	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>4</integer>
+				<key>keyword</key>
+				<string>path</string>
+				<key>script</key>
+				<string>import os
+
+def make_item(**kwargs):
+	return """
+		&lt;item arg="{path}" valid="{valid}" autocomplete="{path}" type="file"&gt;
+			&lt;title&gt;{filename}&lt;/title&gt;
+			&lt;subtitle&gt;{path}&lt;/subtitle&gt;
+		&lt;/item&gt;
+	""".format(**kwargs)
+
+query = """{query}"""
+
+query_dirname = os.path.dirname(query)
+query_basename = os.path.basename(query)
+if not query_dirname:
+	query_dirname = query
+	query_basename = ''
+
+items = []
+
+dirname = os.path.realpath(os.path.expanduser(query_dirname))
+if os.path.exists(dirname):
+	for filename in os.listdir(dirname):
+		path = os.path.join(dirname, filename)
+		if os.path.isdir(path) and filename[0] != '.':
+			path = os.path.join(path, '')
+			try:
+				if filename == query_basename:
+					item = make_item(**dict(path=path, filename=filename, valid='yes'))
+					items.insert(0, item)
+				elif filename.index(query_basename) == 0:
+					item = make_item(**dict(path=path, filename=filename, valid='no'))
+					items.insert(0, item)
+				else:
+					raise
+			except:
+				item = make_item(**dict(path=path, filename=filename, valid='no'))
+				items.append(item)
+	if not query_basename:
+		path = os.path.join(dirname, '')
+		filename = path
+		item = make_item(**dict(path=path, filename=filename, valid='yes'))
+		items.insert(0, item)
+else:
+	pass
+
+print '&lt;?xml version="1.0"?&gt;&lt;items&gt;'
+for item in items:
+	print item
+print '&lt;/items&gt;'</string>
+				<key>subtext</key>
+				<string>Open Path...</string>
+				<key>title</key>
+				<string>Path</string>
+				<key>type</key>
+				<integer>3</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>A21D8D0E-7EE4-4A57-A909-57EAEEF2D83C</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>plusspaces</key>
+				<false/>
+				<key>url</key>
+				<string>file://{query}</string>
+				<key>utf8</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>1A9BA30F-B317-46AE-BBEF-3A7F1E11D587</string>
+			<key>version</key>
+			<integer>0</integer>
+		</dict>
+	</array>
+	<key>readme</key>
+	<string></string>
+	<key>uidata</key>
+	<dict>
+		<key>1A9BA30F-B317-46AE-BBEF-3A7F1E11D587</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+		<key>A21D8D0E-7EE4-4A57-A909-57EAEEF2D83C</key>
+		<dict>
+			<key>ypos</key>
+			<real>10</real>
+		</dict>
+	</dict>
+	<key>webaddress</key>
+	<string>https://github.com/monkeycz/alfred-path</string>
+</dict>
+</plist>
